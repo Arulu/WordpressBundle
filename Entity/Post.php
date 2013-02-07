@@ -9,7 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * Hypebeast\WordpressBundle\Entity\Post
  *
  * @ORM\Table(name="posts")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Hypebeast\WordpressBundle\Repository\PostRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class Post
@@ -636,10 +636,23 @@ class Post
      *
      * @return \Hypebeast\WordpressBundle\Entity\Post
      */
-    public function getChildren()
+    public function getChildren($type = null)
     {
-        return $this->children;
+		foreach($this->children->toArray() as $post)
+		{
+			if($post->getType() == $type)
+				return $post;
+		}
+
+		return $this->children;
     }
+
+	public function getPostImage()
+	{
+		$post = $this->getChildren('attachment');
+
+		return $post->getGuid();
+	}
 
     /**
      * Set parent
